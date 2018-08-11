@@ -1,5 +1,13 @@
 import paho.mqtt.client as mqtt
-import pixels as led
+try:
+    import pixels
+    led = pixels.pixels
+except:
+    from pixel_ring import pixel_ring
+    led = pixel_ring
+    from gpiozero import LED
+    power = LED(5)
+    power.on() 
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -8,9 +16,9 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
     if msg.topic == "hermes/hotword/toggleOff":
-        led.pixels.wakeup()
+        led.wakeup()
     elif msg.topic == "hermes/hotword/toggleOn":
-        led.pixels.off()
+        led.off()
 
 client = mqtt.Client()
 client.on_connect = on_connect
@@ -25,6 +33,11 @@ topics = [("hermes/intent/#", 0), ("hermes/hotword/#", 0), ("hermes/asr/#", 0), 
 client.subscribe(topics)
 
 client.loop_forever()
+
+try:
+    power.off()
+except:
+    pass
 
 
 # MQTT_TOPIC_NLU = "hermes/nlu/"

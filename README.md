@@ -2,7 +2,7 @@
 
 ## Requirements
 - requests
-- paho.mqtt
+- paho-mqtt
 
 
 ## Usage
